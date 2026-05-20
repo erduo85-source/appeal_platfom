@@ -10,7 +10,6 @@ import {
   Plus,
   Search,
   Settings2,
-  Upload,
   X,
 } from 'lucide-react'
 import './styles.css'
@@ -173,7 +172,7 @@ function App() {
     }
     setConfirm({
       title: '确认关闭',
-      body: '关闭后将清除编辑内容，请确认是否关闭。',
+      body: '关闭后将重置编辑内容，请确认是否关闭。',
       primary: '确认关闭',
       onConfirm: () => {
         setDrawerOpen(false)
@@ -224,7 +223,7 @@ function App() {
           projects: payload.projects,
           id: Date.now(),
           name: payload.name,
-          icon: payload.logoPreview || firstProject.icon,
+          icon: firstProject.icon,
           updatedAt: '2026-05-19 20:00:00',
           updatedBy: '王建',
         },
@@ -242,7 +241,7 @@ function App() {
                 appids: payload.projects.map((project) => project.appid),
                 projects: payload.projects,
                 name: payload.name,
-                icon: payload.logoPreview || item.icon,
+                icon: firstProject.icon,
                 updatedAt: '2026-05-19 20:00:00',
                 updatedBy: '王建',
               }
@@ -518,7 +517,7 @@ function GameDrawer({ games, onClose, onCancel, onSave, onCreate, onEdit, onDele
           </div>
           <div className="list-toolbar">
             <div className="issuer-select">{defaultAccountSystem}<ChevronDown size={14} /></div>
-            <button className="primary-btn" onClick={onCreate}><Plus size={14} />接入其他游戏</button>
+            <button className="primary-btn add-game-btn" onClick={onCreate}>+ 接入其他游戏</button>
           </div>
           <div className="game-table-wrap">
             <table className="game-table">
@@ -604,7 +603,6 @@ function GameModal({ mode, game, configuredIds, onCancel, onSubmit }) {
     : []
   const [selectedProjects, setSelectedProjects] = useState(defaultProjects)
   const [name, setName] = useState(isEdit ? game.name : '')
-  const [logoPreview, setLogoPreview] = useState(isEdit ? game.icon : '')
   const [open, setOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [error, setError] = useState('')
@@ -657,11 +655,7 @@ function GameModal({ mode, game, configuredIds, onCancel, onSubmit }) {
       setError('请输入展示游戏名称')
       return
     }
-    if (!logoPreview) {
-      setError('请上传游戏LOGO')
-      return
-    }
-    onSubmit({ mode, projects: selectedProjects, name: name.trim(), logoPreview, original: game })
+    onSubmit({ mode, projects: selectedProjects, name: name.trim(), original: game })
   }
 
   const toggleProject = (option) => {
@@ -672,7 +666,6 @@ function GameModal({ mode, game, configuredIds, onCancel, onSubmit }) {
       setSelectedProjects(next)
       if (!next.length) {
         setName('')
-        setLogoPreview('')
       }
       setError('')
       return
@@ -682,15 +675,7 @@ function GameModal({ mode, game, configuredIds, onCancel, onSubmit }) {
     setSelectedProjects(next)
     if (!selectedProjects.length) {
       setName(normalized.name)
-      setLogoPreview(normalized.icon)
     }
-    setError('')
-  }
-
-  const handleFile = (event) => {
-    const file = event.target.files?.[0]
-    if (!file) return
-    setLogoPreview(URL.createObjectURL(file))
     setError('')
   }
 
@@ -754,14 +739,6 @@ function GameModal({ mode, game, configuredIds, onCancel, onSubmit }) {
           </label>
           <input placeholder="请输入展示游戏名称" value={name} onChange={(event) => setName(event.target.value)} />
         </div>
-        <div className={`form-row logo-row ${open ? 'select-open' : ''}`}>
-          <label>游戏LOGO *</label>
-          <label className={`upload-box ${logoPreview ? 'has-image' : ''}`}>
-            {logoPreview ? <img src={logoPreview} alt="" /> : <><Plus size={18} /><span>Upload</span></>}
-            <input type="file" accept="image/png,image/jpeg" onChange={handleFile} />
-          </label>
-          <p>请上传1:1比例的PNG或JPG图片，大小不超过2MB</p>
-        </div>
         {error && <div className="form-error">{error}</div>}
         <div className="modal-foot">
           <button className="secondary-btn" onClick={onCancel}>取消</button>
@@ -789,11 +766,21 @@ function ConfirmDialog({ title, body, primary, danger, onCancel, onConfirm }) {
 }
 
 function AppidList({ appids }) {
+  const [firstAppid, ...restAppids] = appids
+
   return (
     <span className="appid-list">
-      {appids.map((appid) => (
-        <span key={appid}>{appid}</span>
-      ))}
+      <span>{firstAppid}</span>
+      {restAppids.length > 0 && (
+        <span className="appid-more" tabIndex="0">
+          +{restAppids.length}
+          <span className="appid-more-pop">
+            {restAppids.map((appid) => (
+              <span key={appid}>{appid}</span>
+            ))}
+          </span>
+        </span>
+      )}
     </span>
   )
 }
