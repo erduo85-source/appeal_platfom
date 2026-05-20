@@ -1,5 +1,5 @@
 {
-  "name": "appeal_platfom",
+  "name": "backend-for-account-appeal",
   "private": true,
   "scripts": {
     "dev": "vite --host 0.0.0.0",

@@ -1,4 +1,4 @@
-# appeal_platfom
+# backend-for-account-appeal
 
 账号申诉后台「游戏接入配置」静态 React 原型。
 
