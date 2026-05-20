@@ -322,9 +322,10 @@ function Filters({ games }) {
     <section className="panel filters">
       <SectionTitle>筛选条件</SectionTitle>
       <div className="filter-grid">
-        <Field label="申请单号" placeholder="请输入注销申请单号" />
+        <Field label="申请单号" placeholder="请输入申诉申请单号" />
         <Field label="申诉账号" placeholder="请输入申诉账号" />
         <Field label="申诉状态" value="系统审核未通过" />
+        <Field label="发行主体" value="杭州游卡网络技术有限公司" />
         <Field label="申诉游戏" value={games[0]?.name || '请选择申诉游戏'} withIcon={games[0]?.icon} />
         <Field label="审核人" placeholder="请输入审核人" />
         <Field label="审核时间" placeholder="开始时间   ~   结束时间" />
@@ -352,6 +353,9 @@ function Field({ label, placeholder, value, withIcon }) {
 
 function AppealTable({ games }) {
   const first = games[0]
+  const pageSize = 10
+  const total = appeals.length
+  const totalPages = Math.max(1, Math.ceil(total / pageSize))
   return (
     <section className="panel appeal-list">
       <SectionTitle>申诉列表</SectionTitle>
@@ -391,7 +395,27 @@ function AppealTable({ games }) {
           </tbody>
         </table>
       </div>
+      <Pagination total={total} pageSize={pageSize} current={1} totalPages={totalPages} />
     </section>
+  )
+}
+
+function Pagination({ total, pageSize, current, totalPages }) {
+  return (
+    <div className="pagination" aria-label="分页">
+      <span className="pagination-total">共 {total} 条</span>
+      <button className="page-nav" disabled aria-label="上一页">‹</button>
+      {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+        <button className={`page-number ${page === current ? 'active' : ''}`} key={page}>
+          {page}
+        </button>
+      ))}
+      <button className="page-nav" disabled={current >= totalPages} aria-label="下一页">›</button>
+      <button className="page-size" type="button">{pageSize} 条/页 <ChevronDown size={12} /></button>
+      <span className="pagination-jump">跳至</span>
+      <input className="page-jump-input" aria-label="跳转页码" />
+      <span className="pagination-jump">页</span>
+    </div>
   )
 }
 
