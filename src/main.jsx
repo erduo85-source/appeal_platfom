@@ -108,6 +108,12 @@ const projectOptions = [
   { id: 1064, name: '因狄斯的谎言', appid: '10100026', issuer },
 ]
 
+const issuerCascaderOptions = [
+  { label: '游卡', matcher: (value) => !value.includes('游一卡') && !value.includes('途唐') },
+  { label: '游一卡', matcher: (value) => value.includes('游一卡') },
+  { label: '途唐', matcher: (value) => value.includes('途唐') },
+]
+
 const appeals = [
   { no: '559561835989208743', account: 'me1*******52', uid: '210362265892', status: '系统审核未通过', time: '2025-03-27 14:01:57' },
   { no: '559561835989208744', account: 'you1*******52', uid: '210362265892', status: '系统审核未通过', time: '2025-03-27 14:01:57' },
@@ -523,11 +529,20 @@ function GameModal({ mode, game, configuredIds, onCancel, onSubmit }) {
   const [name, setName] = useState(isEdit ? game.name : '')
   const [logoPreview, setLogoPreview] = useState(isEdit ? game.icon : '')
   const [open, setOpen] = useState(false)
+  const [activeIssuer, setActiveIssuer] = useState('游卡')
   const [error, setError] = useState('')
   const sortedProjectOptions = useMemo(
     () => [...projectOptions].sort((a, b) => Number(configuredIds.has(a.appid)) - Number(configuredIds.has(b.appid))),
     [configuredIds],
   )
+  const cascaderGroups = useMemo(
+    () => issuerCascaderOptions.map((issuerOption) => ({
+      label: issuerOption.label,
+      options: sortedProjectOptions.filter((option) => issuerOption.matcher(option.issuer)),
+    })),
+    [sortedProjectOptions],
+  )
+  const activeGroup = cascaderGroups.find((group) => group.label === activeIssuer) || cascaderGroups[0]
 
   const handleSubmit = () => {
     if (!project) {
@@ -564,24 +579,41 @@ function GameModal({ mode, game, configuredIds, onCancel, onSubmit }) {
             <span>{project?.name || '请选择接入项目'}</span>{project && <span>{project.appid}</span>}<ChevronDown size={14} />
           </div>
           {open && !isEdit && (
-            <div className="select-menu">
-              {sortedProjectOptions.map((option) => {
-                const disabled = configuredIds.has(option.appid) && option.appid !== project?.appid
-                return (
+            <div className="cascader-menu">
+              <div className="cascader-issuer-list">
+                {cascaderGroups.map((group) => (
                   <button
-                    className={disabled ? 'disabled' : option.appid === project?.appid ? 'selected' : ''}
-                    key={option.appid}
-                    disabled={disabled}
-                    onClick={() => {
-                      setProject(option)
-                      setName(option.name)
-                      setOpen(false)
-                    }}
+                    type="button"
+                    className={group.label === activeIssuer ? 'active' : ''}
+                    key={group.label}
+                    onClick={() => setActiveIssuer(group.label)}
                   >
-                    <span>{option.name}</span><span>{option.appid}</span>{disabled && <em>已接入</em>}
+                    <span>{group.label}</span>
+                    <span className="cascader-arrow">›</span>
                   </button>
-                )
-              })}
+                ))}
+              </div>
+              <div className="cascader-game-list">
+                {activeGroup.options.map((option) => {
+                  const disabled = configuredIds.has(option.appid) && option.appid !== project?.appid
+                  return (
+                    <button
+                      type="button"
+                      className={disabled ? 'disabled' : option.appid === project?.appid ? 'selected' : ''}
+                      key={option.appid}
+                      disabled={disabled}
+                      onClick={() => {
+                        setProject(option)
+                        setName(option.name)
+                        setOpen(false)
+                        setError('')
+                      }}
+                    >
+                      <span>{option.name}</span><span>{option.appid}</span>{disabled && <em>已接入</em>}
+                    </button>
+                  )
+                })}
+              </div>
             </div>
           )}
         </div>

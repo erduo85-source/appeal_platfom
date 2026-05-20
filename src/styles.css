@@ -814,48 +814,97 @@ td {
   border-color: #d9d9d9;
 }
 
-.select-menu {
+.cascader-menu {
   position: absolute;
   top: 32px;
   left: 138px;
-  width: 330px;
-  max-height: 108px;
-  overflow-y: auto;
+  width: 380px;
+  height: 214px;
+  display: grid;
+  grid-template-columns: 104px 1fr;
   background: #fff;
   border: 1px solid #d9d9d9;
   border-radius: 3px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   z-index: 2;
+  overflow: hidden;
 }
 
-.select-menu button {
+.cascader-issuer-list {
+  background: #fafbfc;
+  border-right: 1px solid #e5e7eb;
+}
+
+.cascader-issuer-list button,
+.cascader-game-list button {
   width: 100%;
   border: 0;
   background: #fff;
-  height: 36px;
-  display: grid;
-  grid-template-columns: 1fr 80px 54px;
-  align-items: center;
-  padding: 0 12px;
+  height: 34px;
   text-align: left;
   color: #111827;
+  font-size: 13px;
 }
 
-.select-menu button:not(.disabled):hover {
+.cascader-issuer-list button {
+  display: grid;
+  grid-template-columns: 1fr 16px;
+  align-items: center;
+  padding: 0 12px 0 16px;
+  background: #fff;
+}
+
+.cascader-issuer-list button.active {
+  background: #eaf3ff;
+  color: #1677ff;
+  box-shadow: inset 3px 0 0 #1677ff;
+}
+
+.cascader-arrow {
+  color: #98a2b3;
+  text-align: right;
+}
+
+.cascader-issuer-list button.active .cascader-arrow {
+  color: #1677ff;
+}
+
+.cascader-game-list {
+  max-height: 214px;
+  overflow-y: auto;
+  background: #fff;
+}
+
+.cascader-game-list button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 76px 48px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px 0 16px;
+}
+
+.cascader-issuer-list button:hover,
+.cascader-game-list button:not(.disabled):hover {
   background: #f5f7fa;
 }
 
-.select-menu button.selected {
+.cascader-game-list button.selected {
   background: #eaf3ff;
   color: #1677ff;
 }
 
-.select-menu button.disabled {
+.cascader-game-list button.disabled {
   color: #bfbfbf;
   cursor: not-allowed;
 }
 
-.select-menu em {
+.cascader-game-list span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cascader-game-list em {
   font-style: normal;
   color: #bfbfbf;
   font-size: 12px;
