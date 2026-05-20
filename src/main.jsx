@@ -25,7 +25,7 @@ import iconHuanle from '../pic/欢乐.png'
 import iconNuyan from '../pic/怒焰.png'
 import iconLangren from '../pic/狼人.png'
 
-const issuer = '杭州游卡网络技术有限公司'
+const issuer = '杭州游卡网络科技有限公司'
 
 const seedGames = [
   { id: 1, name: '三国杀移动版', appid: '10100001', icon: iconHand, updatedAt: '2025-05-28 14:01:57', updatedBy: '系统' },
@@ -41,11 +41,71 @@ const seedGames = [
 ]
 
 const projectOptions = [
-  { id: 11, name: '幻想名将录', appid: '10100086', icon: iconMingjiang, updatedAt: '2025-04-01 12:18:20', updatedBy: '系统' },
-  { id: 12, name: '三国云梦录', appid: '10100088', icon: iconYijiang, updatedAt: '2025-04-01 12:18:20', updatedBy: '系统' },
-  { id: 13, name: '放置三国', appid: '10100090', icon: iconSanwu, updatedAt: '2025-04-01 12:18:20', updatedBy: '系统' },
-  { id: 14, name: '少年名将', appid: '10100091', icon: iconMingjiang, updatedAt: '2025-04-01 12:18:20', updatedBy: '系统' },
-  ...seedGames,
+  { id: 1000, name: '月相计划', appid: '10100290', issuer },
+  { id: 1001, name: '三国杀OL', appid: '10100002', issuer },
+  { id: 1002, name: '大梦勇士-App国内', appid: '10100683', issuer },
+  { id: 1003, name: '头铁主公', appid: '10100349', issuer: '上海途唐' },
+  { id: 1004, name: '大梦勇士', appid: '40100444', issuer },
+  { id: 1005, name: '妖灵打工团', appid: '10100552', issuer: '上海游一卡网络技术有限公司' },
+  { id: 1006, name: '幽都-国内PC', appid: '20100681', issuer },
+  { id: 1007, name: '代号：SV-国内App', appid: '10100654', issuer },
+  { id: 1008, name: '代号：MX3-国内H5', appid: '40100551', issuer: '上海游一卡网络技术有限公司' },
+  { id: 1009, name: 'GS SDK-PC', appid: '20100528', issuer },
+  { id: 1010, name: '乐游VIP服务', appid: '10100672', issuer },
+  { id: 1011, name: '星火英雄-国内App', appid: '10100560', issuer },
+  { id: 1012, name: '七塔：艾丽西亚之影', appid: '10100335', issuer },
+  { id: 1013, name: 'OWGame-国内', appid: '20100626', issuer },
+  { id: 1014, name: '代号：MX3-国内App并行测试', appid: '10100653', issuer },
+  { id: 1015, name: '三国杀武将觉醒', appid: '10100080', issuer },
+  { id: 1016, name: '代号：SA-H5', appid: '40100612', issuer },
+  { id: 1017, name: '代号：SA-国内', appid: '10100448', issuer },
+  { id: 1018, name: '代号：C4-H5', appid: '40100592', issuer },
+  { id: 1019, name: '西游奇妙冒险', appid: '10100413', issuer },
+  { id: 1020, name: '代号：NW-H5', appid: '40100629', issuer },
+  { id: 1021, name: '代号：C4-App', appid: '10100591', issuer },
+  { id: 1022, name: 'GS SDK', appid: '10100327', issuer: '上海途唐' },
+  { id: 1023, name: '破拆专家', appid: '40100625', issuer },
+  { id: 1024, name: '三国杀名将传', appid: '10100005', issuer },
+  { id: 1025, name: '代号：启明', appid: '10100409', issuer },
+  { id: 1026, name: '奇妙垂钓物语-国内', appid: '10100623', issuer },
+  { id: 1027, name: '三国杀名将传2-国内App', appid: '10100529', issuer },
+  { id: 1028, name: '代号：AJ-H5', appid: '40100534', issuer },
+  { id: 1029, name: '海外账号中心', appid: '30200367', issuer },
+  { id: 1030, name: '节奏旅社-PC国内', appid: '20100615', issuer },
+  { id: 1031, name: '指间山海-H5', appid: '40100598', issuer },
+  { id: 1032, name: '勇者远征', appid: '40100517', issuer },
+  { id: 1033, name: '勇者远征', appid: '10100518', issuer },
+  { id: 1034, name: 'LC GAME', appid: '40100610', issuer },
+  { id: 1035, name: '同乡斗地主-H5', appid: '40100580', issuer },
+  { id: 1036, name: '杭州游卡网络科技有限公司用户平台', appid: '10100432', issuer },
+  { id: 1037, name: 'YOKA打包', appid: '10100383', issuer },
+  { id: 1038, name: '代号：U-App国内', appid: '10100532', issuer },
+  { id: 1039, name: '代号：U-H5', appid: '40100531', issuer },
+  { id: 1040, name: '代号：AJ-App国内', appid: '10100578', issuer },
+  { id: 1041, name: '失序之地-国内', appid: '50100336', issuer },
+  { id: 1042, name: '代号：潮汐', appid: '10100410', issuer },
+  { id: 1043, name: '斗三国', appid: '40100469', issuer },
+  { id: 1044, name: '忍者村大战3', appid: '20100299', issuer },
+  { id: 1045, name: '王者之战比赛测试服App', appid: '10100487', issuer },
+  { id: 1046, name: '大萌熊的家', appid: '10100039', issuer },
+  { id: 1047, name: '烽烟策', appid: '10100446', issuer },
+  { id: 1048, name: '七王书', appid: '40100417', issuer },
+  { id: 1049, name: '指间山海', appid: '10100042', issuer },
+  { id: 1050, name: '夺帅', appid: '10100371', issuer },
+  { id: 1051, name: '里世界危机', appid: '10100505', issuer: '上海游一卡网络技术有限公司' },
+  { id: 1052, name: '破拆专家', appid: '40100391', issuer },
+  { id: 1053, name: '古惑三国志APP', appid: '10100484', issuer },
+  { id: 1054, name: '狼人对决', appid: '10100010', issuer },
+  { id: 1055, name: '领沃云电脑', appid: '10100278', issuer },
+  { id: 1056, name: '指尖魔宠', appid: '40100400', issuer },
+  { id: 1057, name: '自在西游', appid: '10100032', issuer },
+  { id: 1058, name: '自在西游-微信小游戏', appid: '40100103', issuer },
+  { id: 1059, name: '欢乐三国杀', appid: '10100031', issuer },
+  { id: 1060, name: '三国杀：一将成名', appid: '10100011', issuer },
+  { id: 1061, name: '古惑三国志', appid: '40100072', issuer },
+  { id: 1062, name: '海边的安西娅', appid: '10100057', issuer },
+  { id: 1063, name: '怒焰三国杀', appid: '10100004', issuer },
+  { id: 1064, name: '因狄斯的谎言', appid: '10100026', issuer },
 ]
 
 const appeals = [
@@ -434,7 +494,7 @@ function GameDrawer({ games, onClose, onCancel, onSave, onCreate, onEdit, onDele
                     </td>
                     <td><GameName game={game} /></td>
                     <td>{game.appid}</td>
-                    <td>{issuer}</td>
+                    <td>{game.issuer || issuer}</td>
                     <td>{game.updatedAt}</td>
                     <td>{game.updatedBy}</td>
                     <td className="actions">
@@ -464,6 +524,10 @@ function GameModal({ mode, game, configuredIds, onCancel, onSubmit }) {
   const [logoPreview, setLogoPreview] = useState(isEdit ? game.icon : '')
   const [open, setOpen] = useState(false)
   const [error, setError] = useState('')
+  const sortedProjectOptions = useMemo(
+    () => [...projectOptions].sort((a, b) => Number(configuredIds.has(a.appid)) - Number(configuredIds.has(b.appid))),
+    [configuredIds],
+  )
 
   const handleSubmit = () => {
     if (!project) {
@@ -501,7 +565,7 @@ function GameModal({ mode, game, configuredIds, onCancel, onSubmit }) {
           </div>
           {open && !isEdit && (
             <div className="select-menu">
-              {projectOptions.map((option) => {
+              {sortedProjectOptions.map((option) => {
                 const disabled = configuredIds.has(option.appid) && option.appid !== project?.appid
                 return (
                   <button
