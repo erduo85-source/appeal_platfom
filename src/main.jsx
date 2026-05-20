@@ -595,7 +595,7 @@ function GameModal({ mode, game, configuredIds, onCancel, onSubmit }) {
             {logoPreview ? <img src={logoPreview} alt="" /> : <><Plus size={18} /><span>Upload</span></>}
             <input type="file" accept="image/png,image/jpeg" onChange={handleFile} />
           </label>
-          <p>{isEdit ? '上传新 LOGO 后将覆盖当前展示 LOGO' : '请上传1:1比例的PNG或JPG图片，大小不超过2MB'}</p>
+          <p>请上传1:1比例的PNG或JPG图片，大小不超过2MB</p>
         </div>
         {error && <div className="form-error">{error}</div>}
         <div className="modal-foot">
