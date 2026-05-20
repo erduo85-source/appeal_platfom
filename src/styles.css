@@ -563,10 +563,66 @@ td {
   white-space: nowrap;
 }
 
+.game-table th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
 .game-table th:nth-child(1),
 .game-table td:nth-child(1) {
-  width: 36px;
+  width: 56px;
   color: #98a2b3;
+}
+
+.game-table th:nth-child(1) {
+  color: #111827;
+}
+
+.order-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.order-tip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  color: #98a2b3;
+  cursor: help;
+}
+
+.order-tip:hover,
+.order-tip:focus-visible {
+  color: #1677ff;
+  outline: none;
+}
+
+.order-tip-pop {
+  position: absolute;
+  left: 0;
+  top: 20px;
+  width: 260px;
+  transform: none;
+  display: none;
+  white-space: normal;
+  padding: 8px 10px;
+  border-radius: 4px;
+  background: rgba(17, 24, 39, 0.94);
+  color: #fff;
+  font-weight: 400;
+  line-height: 18px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  z-index: 5;
+}
+
+.order-tip:hover .order-tip-pop,
+.order-tip:focus-visible .order-tip-pop {
+  display: block;
 }
 
 .game-table th:nth-child(2),

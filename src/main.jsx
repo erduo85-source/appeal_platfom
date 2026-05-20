@@ -391,7 +391,19 @@ function GameDrawer({ games, onClose, onCancel, onSave, onCreate, onEdit, onDele
             <table className="game-table">
               <thead>
                 <tr>
-                  <th></th>
+                  <th>
+                    <span className="order-head">
+                      顺序
+                      <span
+                        className="order-tip"
+                        tabIndex="0"
+                        aria-label="此处排序将决定玩家申诉时，游戏选择列表的展示顺序。"
+                      >
+                        <Info size={12} />
+                        <span className="order-tip-pop">此处排序将决定玩家申诉时，游戏选择列表的展示顺序。</span>
+                      </span>
+                    </span>
+                  </th>
                   <th>游戏</th>
                   <th>appid</th>
                   <th>发行主体</th>
