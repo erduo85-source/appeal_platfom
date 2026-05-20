@@ -1,7 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import {
   Bell,
+  Check,
   ChevronDown,
   CircleUserRound,
   GripVertical,
@@ -26,19 +27,51 @@ import iconNuyan from '../pic/怒焰.png'
 import iconLangren from '../pic/狼人.png'
 
 const issuer = '杭州游卡网络科技有限公司'
+const defaultAccountSystem = '游卡'
+
+function getAccountSystem(issuerName = issuer) {
+  if (issuerName.includes('游一卡')) return '游一卡'
+  if (issuerName.includes('途唐')) return '途唐'
+  return '游卡'
+}
 
 const seedGames = [
-  { id: 1, name: '三国杀移动版', appid: '10100001', icon: iconHand, updatedAt: '2025-05-28 14:01:57', updatedBy: '系统' },
-  { id: 2, name: '三国杀一将成名', appid: '10100011', icon: iconYijiang, updatedAt: '2025-05-21 10:16:34', updatedBy: '王建' },
-  { id: 3, name: '三国杀OL', appid: '10100002', icon: iconOl, updatedAt: '2025-05-18 20:18:25', updatedBy: '系统' },
-  { id: 4, name: '三国杀名将传', appid: '10100005', icon: iconMingjiang, updatedAt: '2025-05-12 11:52:41', updatedBy: '系统' },
-  { id: 5, name: '自在西游', appid: '10100032', icon: iconXiyou, updatedAt: '2025-05-08 09:36:20', updatedBy: '王建' },
-  { id: 6, name: '指间山海', appid: '10100042', icon: iconZhijian, updatedAt: '2025-05-06 17:28:03', updatedBy: '系统' },
-  { id: 7, name: '三国杀武将觉醒', appid: '10100080', icon: iconSanwu, updatedAt: '2025-04-30 15:12:09', updatedBy: '系统' },
-  { id: 8, name: '欢乐三国杀', appid: '10100031', icon: iconHuanle, updatedAt: '2025-04-24 13:45:18', updatedBy: '王建' },
-  { id: 9, name: '怒焰三国杀', appid: '10100004', icon: iconNuyan, updatedAt: '2025-04-18 20:18:25', updatedBy: '系统' },
-  { id: 10, name: '狼人对决', appid: '10100010', icon: iconLangren, updatedAt: '2025-04-10 16:02:37', updatedBy: '系统' },
+  { id: 1, name: '三国杀移动版', appid: '10100001', appids: ['10100001', '10100011'], accountSystem: defaultAccountSystem, icon: iconHand, updatedAt: '2025-05-28 14:01:57', updatedBy: '系统' },
+  { id: 2, name: '三国杀一将成名', appid: '10100011', accountSystem: defaultAccountSystem, icon: iconYijiang, updatedAt: '2025-05-21 10:16:34', updatedBy: '王建' },
+  { id: 3, name: '三国杀OL', appid: '10100002', accountSystem: defaultAccountSystem, icon: iconOl, updatedAt: '2025-05-18 20:18:25', updatedBy: '系统' },
+  { id: 4, name: '三国杀名将传', appid: '10100005', accountSystem: defaultAccountSystem, icon: iconMingjiang, updatedAt: '2025-05-12 11:52:41', updatedBy: '系统' },
+  { id: 5, name: '自在西游', appid: '10100032', accountSystem: defaultAccountSystem, icon: iconXiyou, updatedAt: '2025-05-08 09:36:20', updatedBy: '王建' },
+  { id: 6, name: '指间山海', appid: '10100042', accountSystem: defaultAccountSystem, icon: iconZhijian, updatedAt: '2025-05-06 17:28:03', updatedBy: '系统' },
+  { id: 7, name: '三国杀武将觉醒', appid: '10100080', accountSystem: defaultAccountSystem, icon: iconSanwu, updatedAt: '2025-04-30 15:12:09', updatedBy: '系统' },
+  { id: 8, name: '欢乐三国杀', appid: '10100031', accountSystem: defaultAccountSystem, icon: iconHuanle, updatedAt: '2025-04-24 13:45:18', updatedBy: '王建' },
+  { id: 9, name: '怒焰三国杀', appid: '10100004', accountSystem: defaultAccountSystem, icon: iconNuyan, updatedAt: '2025-04-18 20:18:25', updatedBy: '系统' },
+  { id: 10, name: '狼人对决', appid: '10100010', accountSystem: defaultAccountSystem, icon: iconLangren, updatedAt: '2025-04-10 16:02:37', updatedBy: '系统' },
 ]
+
+const iconRules = [
+  { match: (name, appid) => name.includes('移动版') || appid === '10100001', icon: iconHand },
+  { match: (name, appid) => name.includes('一将') || appid === '10100011', icon: iconYijiang },
+  { match: (name, appid) => name.includes('OL') || appid === '10100002', icon: iconOl },
+  { match: (name, appid) => name.includes('名将') || appid === '10100005', icon: iconMingjiang },
+  { match: (name, appid) => name.includes('西游') || appid === '10100032', icon: iconXiyou },
+  { match: (name, appid) => name.includes('指间山海') || appid === '10100042', icon: iconZhijian },
+  { match: (name, appid) => name.includes('武将觉醒') || appid === '10100080', icon: iconSanwu },
+  { match: (name, appid) => name.includes('欢乐') || appid === '10100031', icon: iconHuanle },
+  { match: (name, appid) => name.includes('怒焰') || appid === '10100004', icon: iconNuyan },
+  { match: (name, appid) => name.includes('狼人') || appid === '10100010', icon: iconLangren },
+]
+
+function getProjectIcon(project) {
+  return iconRules.find((rule) => rule.match(project.name, project.appid))?.icon || iconHand
+}
+
+function normalizeProject(project) {
+  return {
+    ...project,
+    accountSystem: project.accountSystem || getAccountSystem(project.issuer),
+    icon: project.icon || getProjectIcon(project),
+  }
+}
 
 const projectOptions = [
   { id: 1000, name: '月相计划', appid: '10100290', issuer },
@@ -108,12 +141,6 @@ const projectOptions = [
   { id: 1064, name: '因狄斯的谎言', appid: '10100026', issuer },
 ]
 
-const issuerCascaderOptions = [
-  { label: '游卡', matcher: (value) => !value.includes('游一卡') && !value.includes('途唐') },
-  { label: '游一卡', matcher: (value) => value.includes('游一卡') },
-  { label: '途唐', matcher: (value) => value.includes('途唐') },
-]
-
 const appeals = [
   { no: '559561835989208743', account: 'me1*******52', uid: '210362265892', status: '系统审核未通过', time: '2025-03-27 14:01:57' },
   { no: '559561835989208744', account: 'you1*******52', uid: '210362265892', status: '系统审核未通过', time: '2025-03-27 14:01:57' },
@@ -128,7 +155,10 @@ function App() {
   const [confirm, setConfirm] = useState(null)
   const [toast, setToast] = useState('')
 
-  const configuredIds = useMemo(() => new Set(draftGames.map((game) => game.appid)), [draftGames])
+  const configuredIds = useMemo(
+    () => new Set(draftGames.flatMap((game) => game.appids || [game.appid])),
+    [draftGames],
+  )
 
   const openDrawer = () => {
     setDraftGames(savedGames)
@@ -143,7 +173,7 @@ function App() {
     }
     setConfirm({
       title: '确认关闭',
-      body: '关闭后将重置编辑内容，请确认是否关闭。',
+      body: '关闭后将清除编辑内容，请确认是否关闭。',
       primary: '确认关闭',
       onConfirm: () => {
         setDrawerOpen(false)
@@ -183,22 +213,39 @@ function App() {
 
   const saveGameModal = (payload) => {
     if (payload.mode === 'create') {
+      const firstProject = payload.projects[0]
       setDraftGames((list) => [
         ...list,
         {
-          ...payload.project,
+          issuer: firstProject.issuer,
+          accountSystem: firstProject.accountSystem,
+          appid: firstProject.appid,
+          appids: payload.projects.map((project) => project.appid),
+          projects: payload.projects,
           id: Date.now(),
           name: payload.name,
-          icon: payload.logoPreview || payload.project.icon,
+          icon: payload.logoPreview || firstProject.icon,
           updatedAt: '2026-05-19 20:00:00',
           updatedBy: '王建',
         },
       ])
     } else {
+      const firstProject = payload.projects[0]
       setDraftGames((list) =>
         list.map((item) =>
           item.id === payload.original.id
-            ? { ...item, name: payload.name, icon: payload.logoPreview || item.icon, updatedAt: '2026-05-19 20:00:00', updatedBy: '王建' }
+            ? {
+                ...item,
+                issuer: firstProject.issuer,
+                accountSystem: firstProject.accountSystem,
+                appid: firstProject.appid,
+                appids: payload.projects.map((project) => project.appid),
+                projects: payload.projects,
+                name: payload.name,
+                icon: payload.logoPreview || item.icon,
+                updatedAt: '2026-05-19 20:00:00',
+                updatedBy: '王建',
+              }
             : item,
         ),
       )
@@ -464,16 +511,13 @@ function GameDrawer({ games, onClose, onCancel, onSave, onCreate, onEdit, onDele
         <div className="drawer-body">
           <div className="notice">
             <Info size={16} />
-            <div>
-              <strong>配置提示：</strong>
-              <p>更新后约 5 分钟同步线上展示，请谨慎操作。<br />申诉游戏仅生效于对应发行主体的账号申诉服务</p>
-            </div>
+            <p><strong>配置提示：</strong>配置保存后 5 分钟，同步更新线上账号申诉和账号找回的游戏列表展示，请谨慎操作。</p>
           </div>
           <div className="list-title">
-            <SectionTitle>申诉游戏列表</SectionTitle>
+            <SectionTitle>游戏列表</SectionTitle>
           </div>
           <div className="list-toolbar">
-            <div className="issuer-select">{issuer}<ChevronDown size={14} /></div>
+            <div className="issuer-select">{defaultAccountSystem}<ChevronDown size={14} /></div>
             <button className="primary-btn" onClick={onCreate}><Plus size={14} />接入其他游戏</button>
           </div>
           <div className="game-table-wrap">
@@ -495,7 +539,7 @@ function GameDrawer({ games, onClose, onCancel, onSave, onCreate, onEdit, onDele
                   </th>
                   <th>游戏</th>
                   <th>appid</th>
-                  <th>发行主体</th>
+                  <th>账号体系</th>
                   <th>最近更新时间</th>
                   <th>最近更新人</th>
                   <th>操作</th>
@@ -523,8 +567,8 @@ function GameDrawer({ games, onClose, onCancel, onSave, onCreate, onEdit, onDele
                       </button>
                     </td>
                     <td><GameName game={game} /></td>
-                    <td>{game.appid}</td>
-                    <td>{game.issuer || issuer}</td>
+                    <td><AppidList appids={game.appids || [game.appid]} /></td>
+                    <td>{game.accountSystem || defaultAccountSystem}</td>
                     <td>{game.updatedAt}</td>
                     <td>{game.updatedBy}</td>
                     <td className="actions">
@@ -548,40 +592,99 @@ function GameDrawer({ games, onClose, onCancel, onSave, onCreate, onEdit, onDele
 
 function GameModal({ mode, game, configuredIds, onCancel, onSubmit }) {
   const isEdit = mode === 'edit'
-  const defaultProject = isEdit ? game : null
-  const [project, setProject] = useState(defaultProject)
+  const defaultProjects = isEdit
+    ? (game.projects || (game.appids || [game.appid]).map((appid) => ({
+        id: appid,
+        name: game.name,
+        appid,
+        issuer: game.issuer || issuer,
+        accountSystem: game.accountSystem || defaultAccountSystem,
+        icon: game.icon,
+      })))
+    : []
+  const [selectedProjects, setSelectedProjects] = useState(defaultProjects)
   const [name, setName] = useState(isEdit ? game.name : '')
   const [logoPreview, setLogoPreview] = useState(isEdit ? game.icon : '')
   const [open, setOpen] = useState(false)
-  const [activeIssuer, setActiveIssuer] = useState('游卡')
+  const [searchQuery, setSearchQuery] = useState('')
   const [error, setError] = useState('')
+  const cascaderRef = useRef(null)
   const sortedProjectOptions = useMemo(
-    () => [...projectOptions].sort((a, b) => Number(configuredIds.has(a.appid)) - Number(configuredIds.has(b.appid))),
+    () => projectOptions
+      .map(normalizeProject)
+      .sort((a, b) => Number(configuredIds.has(a.appid)) - Number(configuredIds.has(b.appid))),
     [configuredIds],
   )
-  const cascaderGroups = useMemo(
-    () => issuerCascaderOptions.map((issuerOption) => ({
-      label: issuerOption.label,
-      options: sortedProjectOptions.filter((option) => issuerOption.matcher(option.issuer)),
-    })),
-    [sortedProjectOptions],
+  const filteredProjectOptions = useMemo(
+    () => sortedProjectOptions.filter((option) => {
+      const keyword = searchQuery.trim().toLowerCase()
+      if (!keyword) return true
+      return `${option.name} ${option.appid}`.toLowerCase().includes(keyword)
+    }),
+    [searchQuery, sortedProjectOptions],
   )
-  const activeGroup = cascaderGroups.find((group) => group.label === activeIssuer) || cascaderGroups[0]
+  const selectedIds = useMemo(() => new Set(selectedProjects.map((item) => item.appid)), [selectedProjects])
+  const mappedLabel = selectedProjects.length
+    ? selectedProjects.length === 1
+      ? `${selectedProjects[0].name} ${selectedProjects[0].appid}`
+      : selectedProjects.map((item) => item.appid).join('、')
+    : '请选择项目'
+
+  useEffect(() => {
+    if (!open) return undefined
+
+    const handleOutsideClick = (event) => {
+      if (!cascaderRef.current?.contains(event.target)) {
+        setOpen(false)
+      }
+    }
+
+    document.addEventListener('pointerdown', handleOutsideClick)
+    return () => document.removeEventListener('pointerdown', handleOutsideClick)
+  }, [open])
 
   const handleSubmit = () => {
-    if (!project) {
-      setError('请选择接入项目')
+    if (!selectedProjects.length) {
+      setError('请选择项目')
+      return
+    }
+    const accountSystems = new Set(selectedProjects.map((item) => item.accountSystem || getAccountSystem(item.issuer)))
+    if (accountSystems.size > 1) {
+      setError('所选项目分属不同账号体系，请调整后再保存')
       return
     }
     if (!name.trim()) {
-      setError('请输入游戏名称')
+      setError('请输入展示游戏名称')
       return
     }
     if (!logoPreview) {
       setError('请上传游戏LOGO')
       return
     }
-    onSubmit({ mode, project, name: name.trim(), logoPreview, original: game })
+    onSubmit({ mode, projects: selectedProjects, name: name.trim(), logoPreview, original: game })
+  }
+
+  const toggleProject = (option) => {
+    const normalized = normalizeProject(option)
+    const selected = selectedIds.has(option.appid)
+    if (selected) {
+      const next = selectedProjects.filter((item) => item.appid !== option.appid)
+      setSelectedProjects(next)
+      if (!next.length) {
+        setName('')
+        setLogoPreview('')
+      }
+      setError('')
+      return
+    }
+
+    const next = [...selectedProjects, normalized]
+    setSelectedProjects(next)
+    if (!selectedProjects.length) {
+      setName(normalized.name)
+      setLogoPreview(normalized.icon)
+    }
+    setError('')
   }
 
   const handleFile = (event) => {
@@ -597,55 +700,61 @@ function GameModal({ mode, game, configuredIds, onCancel, onSubmit }) {
         <button className="modal-x" onClick={onCancel}><X size={16} /></button>
         <h2>{isEdit ? '编辑申诉游戏' : '接入其他游戏'}</h2>
         {!isEdit && <div className="modal-tip">如未找到所需项目，请联系SDK部门进行添加</div>}
-        <div className="form-row">
-          <label>项目选择 *</label>
-          <div className={`select-control ${isEdit ? 'disabled' : ''} ${!project ? 'placeholder' : ''}`} onClick={() => !isEdit && setOpen((next) => !next)}>
-            <span>{project?.name || '请选择接入项目'}</span>{project && <span>{project.appid}</span>}<ChevronDown size={14} />
+        <div className="form-row" ref={cascaderRef}>
+          <label>
+            项目选择 *
+            <span className="field-tip" tabIndex="0">
+              <Info size={12} />
+              <span>选中的项目，将作为游戏申诉和找回时充值订单的数据来源</span>
+            </span>
+          </label>
+          <div className={`select-control ${!selectedProjects.length ? 'placeholder' : ''}`} onClick={() => setOpen((next) => !next)}>
+            <span>{mappedLabel}</span><ChevronDown size={14} />
           </div>
-          {open && !isEdit && (
-            <div className="cascader-menu">
-              <div className="cascader-issuer-list">
-                {cascaderGroups.map((group) => (
-                  <button
-                    type="button"
-                    className={group.label === activeIssuer ? 'active' : ''}
-                    key={group.label}
-                    onClick={() => setActiveIssuer(group.label)}
-                  >
-                    <span>{group.label}</span>
-                    <span className="cascader-arrow">›</span>
-                  </button>
-                ))}
+          {open && (
+            <div className="project-select-menu">
+              <div className="project-search">
+                <Search size={14} />
+                <input
+                  autoFocus
+                  placeholder="搜索游戏名或 appid"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                />
               </div>
-              <div className="cascader-game-list">
-                {activeGroup.options.map((option) => {
-                  const disabled = configuredIds.has(option.appid) && option.appid !== project?.appid
+              <div className="project-option-list">
+                {filteredProjectOptions.map((option) => {
+                  const selected = selectedIds.has(option.appid)
+                  const disabled = configuredIds.has(option.appid) && !selected
                   return (
                     <button
                       type="button"
-                      className={disabled ? 'disabled' : option.appid === project?.appid ? 'selected' : ''}
+                      className={disabled ? 'disabled' : selected ? 'selected' : ''}
                       key={option.appid}
                       disabled={disabled}
-                      onClick={() => {
-                        setProject(option)
-                        setName(option.name)
-                        setOpen(false)
-                        setError('')
-                      }}
+                      onClick={() => toggleProject(option)}
                     >
+                      <span className={`check-box ${selected ? 'checked' : ''}`}>{selected && <Check size={10} />}</span>
                       <span>{option.name}</span><span>{option.appid}</span>{disabled && <em>已接入</em>}
                     </button>
                   )
                 })}
+                {!filteredProjectOptions.length && <p>暂无匹配项目</p>}
               </div>
             </div>
           )}
         </div>
         <div className="form-row">
-          <label>游戏名称 *</label>
-          <input value={name} onChange={(event) => setName(event.target.value)} />
+          <label>
+            展示游戏名 *
+            <span className="field-tip" tabIndex="0">
+              <Info size={12} />
+              <span>玩家申诉/找回时，网页内展示的游戏名称</span>
+            </span>
+          </label>
+          <input placeholder="请输入展示游戏名称" value={name} onChange={(event) => setName(event.target.value)} />
         </div>
-        <div className={`form-row logo-row ${open && !isEdit ? 'select-open' : ''}`}>
+        <div className={`form-row logo-row ${open ? 'select-open' : ''}`}>
           <label>游戏LOGO *</label>
           <label className={`upload-box ${logoPreview ? 'has-image' : ''}`}>
             {logoPreview ? <img src={logoPreview} alt="" /> : <><Plus size={18} /><span>Upload</span></>}
@@ -676,6 +785,16 @@ function ConfirmDialog({ title, body, primary, danger, onCancel, onConfirm }) {
         </div>
       </div>
     </div>
+  )
+}
+
+function AppidList({ appids }) {
+  return (
+    <span className="appid-list">
+      {appids.map((appid) => (
+        <span key={appid}>{appid}</span>
+      ))}
+    </span>
   )
 }
 
