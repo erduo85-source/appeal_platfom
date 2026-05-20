@@ -719,6 +719,14 @@ td {
   padding: 0 52px 18px 28px;
 }
 
+.modal > .form-row:first-of-type {
+  margin-top: 24px;
+}
+
+.modal-tip + .form-row {
+  margin-top: 0;
+}
+
 .form-row label:first-child {
   font-size: 14px;
   color: #1f2937;
