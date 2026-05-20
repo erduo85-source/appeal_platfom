@@ -241,8 +241,7 @@ function Topbar() {
 function Sidebar() {
   return (
     <aside className="sidebar">
-      <div className="menu-title">账号管理</div>
-      {['注销审核', '申诉审核', '账号查询', '订单查询', '行为日志', '支付风控', '运营管理'].map((item) => (
+      {['注销审核', '申诉审核'].map((item) => (
         <div className={`menu-item ${item === '申诉审核' ? 'selected' : ''}`} key={item}>
           <Settings2 size={14} />
           <span>{item}</span>
