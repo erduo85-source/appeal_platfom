@@ -28,11 +28,11 @@ import iconLangren from '../pic/狼人.png'
 const issuer = '杭州游卡网络科技有限公司'
 const defaultAccountSystem = '游卡'
 const defaultAppleVerification = {
-  enabled: true,
-  packageName: 'com.yoka.sgs',
-  keyId: 'ABC123DEFG',
-  issuerId: '69a6de9e-****',
-  privateKey: '-----BEGIN PRIVATE KEY-----',
+  enabled: false,
+  packageName: '',
+  keyId: '',
+  issuerId: '',
+  privateKey: '',
 }
 
 const appleVerificationFields = [
@@ -621,7 +621,7 @@ function GameModal({ mode, game, configuredIds, onCancel, onSubmit }) {
   const [appleVerification, setAppleVerification] = useState(() =>
     isEdit
       ? { ...defaultAppleVerification, ...(game.appleVerification || {}) }
-      : { enabled: true, packageName: '', keyId: '', issuerId: '', privateKey: '' },
+      : { ...defaultAppleVerification },
   )
   const [open, setOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -820,7 +820,7 @@ function GameModal({ mode, game, configuredIds, onCancel, onSubmit }) {
             <span />
           </button>
         </div>
-        {appleVerificationFields.map((field) => (
+        {appleVerification.enabled && appleVerificationFields.map((field) => (
           <div className="form-row" key={field.key}>
             <label>
               {field.label}
@@ -830,7 +830,6 @@ function GameModal({ mode, game, configuredIds, onCancel, onSubmit }) {
               </span>
             </label>
             <input
-              disabled={!appleVerification.enabled}
               placeholder={field.placeholder}
               value={appleVerification[field.key]}
               onChange={(event) => {
