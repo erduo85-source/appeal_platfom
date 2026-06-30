@@ -673,7 +673,7 @@ function GameModal({ mode, game, configuredIds, onCancel, onSubmit }) {
       return
     }
     if (!name.trim()) {
-      setError('请输入展示游戏名称')
+      setError('请输入展示游戏名')
       return
     }
     if (appleVerification.enabled) {
@@ -798,7 +798,7 @@ function GameModal({ mode, game, configuredIds, onCancel, onSubmit }) {
               <span>玩家申诉/找回时，网页内展示的游戏名称</span>
             </span>
           </label>
-          <input placeholder="请输入展示游戏名称" value={name} onChange={(event) => setName(event.target.value)} />
+          <input placeholder="请输入展示游戏名" value={name} onChange={(event) => setName(event.target.value)} />
         </div>
         <div className="form-row">
           <label>
