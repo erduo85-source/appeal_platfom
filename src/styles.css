@@ -225,9 +225,9 @@ button {
   border-radius: 4px;
 }
 
-.input-like svg,
-.issuer-select svg,
-.select-control svg {
+.input-like > svg,
+.issuer-select > svg,
+.select-control > svg {
   margin-left: auto;
   color: #98a2b3;
 }
@@ -952,10 +952,12 @@ td {
 
 .select-control {
   justify-content: flex-start;
-  border-color: #1677ff;
+  border-color: #d9d9d9;
+  overflow: hidden;
+  padding: 0 3px 0 8px;
 }
 
-.select-control span:nth-child(2) {
+.select-control > span:nth-child(2) {
   margin-left: 8px;
 }
 
@@ -968,6 +970,60 @@ td {
 .select-control.placeholder {
   color: #98a2b3;
   border-color: #d9d9d9;
+  padding-left: 12px;
+}
+
+.select-control.has-tags {
+  color: #1f2937;
+}
+
+.selected-tag-list {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.selected-tag {
+  height: 24px;
+  max-width: 150px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
+  border: 1px solid #f0f0f0;
+  border-radius: 2px;
+  background: #f5f5f5;
+  color: rgba(0, 0, 0, 0.85);
+  padding: 0 4px 0 8px;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.selected-tag > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selected-tag button {
+  width: 14px;
+  height: 14px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: rgba(0, 0, 0, 0.45);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.selected-tag button svg {
+  margin-left: 0;
+  color: currentColor;
 }
 
 .project-select-menu {
@@ -1087,6 +1143,31 @@ td {
   background: #1677ff;
 }
 
+.toggle-switch {
+  width: 44px;
+  height: 22px;
+  border: 0;
+  border-radius: 16px;
+  padding: 2px;
+  background: #bfbfbf;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.toggle-switch.on {
+  justify-content: flex-end;
+  background: #1890ff;
+}
+
+.toggle-switch span {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 2px rgba(0, 35, 11, 0.2);
+}
+
 .form-row input {
   height: 32px;
   border: 1px solid #d9d9d9;
@@ -1095,6 +1176,12 @@ td {
   color: #1f2937;
   font-size: 12px;
   line-height: 32px;
+}
+
+.form-row input:disabled {
+  background: #f5f5f5;
+  color: #98a2b3;
+  cursor: not-allowed;
 }
 
 .form-row input::placeholder {
@@ -1137,6 +1224,7 @@ td {
   color: #4b5563;
   font-size: 14px;
   line-height: 22px;
+  white-space: pre-line;
 }
 
 .confirm-foot {

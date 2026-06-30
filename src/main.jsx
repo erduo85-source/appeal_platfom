@@ -27,6 +27,20 @@ import iconLangren from '../pic/狼人.png'
 
 const issuer = '杭州游卡网络科技有限公司'
 const defaultAccountSystem = '游卡'
+const defaultAppleVerification = {
+  enabled: true,
+  packageName: 'com.yoka.sgs',
+  keyId: 'ABC123DEFG',
+  issuerId: '69a6de9e-****',
+  privateKey: '-----BEGIN PRIVATE KEY-----',
+}
+
+const appleVerificationFields = [
+  { key: 'packageName', label: '苹果包名', placeholder: '请输入苹果包名' },
+  { key: 'keyId', label: 'KeyID', placeholder: '请输入 KeyID' },
+  { key: 'issuerId', label: 'IssuerID', placeholder: '请输入 IssuerID' },
+  { key: 'privateKey', label: 'PrivateKey', placeholder: '请输入 PrivateKey' },
+]
 
 function getAccountSystem(issuerName = issuer) {
   if (issuerName.includes('游一卡')) return '游一卡'
@@ -200,9 +214,8 @@ function App() {
   const requestDelete = (game) => {
     setConfirm({
       title: '确认删除',
-      body: `删除「${game.name}」后需点击抽屉底部“保存”才会正式生效，请确认是否删除该申诉游戏。`,
-      primary: '确认删除',
-      danger: true,
+      body: '确认后仅从暂存列表移除。\n点击抽屉底部“保存”后正式生效。',
+      primary: '确认',
       onConfirm: () => {
         setDraftGames((list) => list.filter((item) => item.id !== game.id))
         setDirty(true)
@@ -226,6 +239,7 @@ function App() {
           icon: firstProject.icon,
           updatedAt: '2026-05-19 20:00:00',
           updatedBy: '王建',
+          appleVerification: payload.appleVerification,
         },
       ])
     } else {
@@ -244,6 +258,7 @@ function App() {
                 icon: firstProject.icon,
                 updatedAt: '2026-05-19 20:00:00',
                 updatedBy: '王建',
+                appleVerification: payload.appleVerification,
               }
             : item,
         ),
@@ -371,7 +386,7 @@ function Filters({ games }) {
         <Field label="申请单号" placeholder="请输入申诉申请单号" />
         <Field label="申诉账号" placeholder="请输入申诉账号" />
         <Field label="申诉状态" value="系统审核未通过" />
-        <Field label="发行主体" value="杭州游卡网络技术有限公司" />
+        <Field label="账号体系" value={defaultAccountSystem} />
         <Field label="申诉游戏" value={games[0]?.name || '请选择申诉游戏'} withIcon={games[0]?.icon} />
         <Field label="审核人" placeholder="请输入审核人" />
         <Field label="审核时间" placeholder="开始时间   ~   结束时间" />
@@ -603,6 +618,11 @@ function GameModal({ mode, game, configuredIds, onCancel, onSubmit }) {
     : []
   const [selectedProjects, setSelectedProjects] = useState(defaultProjects)
   const [name, setName] = useState(isEdit ? game.name : '')
+  const [appleVerification, setAppleVerification] = useState(() =>
+    isEdit
+      ? { ...defaultAppleVerification, ...(game.appleVerification || {}) }
+      : { enabled: true, packageName: '', keyId: '', issuerId: '', privateKey: '' },
+  )
   const [open, setOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [error, setError] = useState('')
@@ -622,11 +642,12 @@ function GameModal({ mode, game, configuredIds, onCancel, onSubmit }) {
     [searchQuery, sortedProjectOptions],
   )
   const selectedIds = useMemo(() => new Set(selectedProjects.map((item) => item.appid)), [selectedProjects])
-  const mappedLabel = selectedProjects.length
-    ? selectedProjects.length === 1
-      ? `${selectedProjects[0].name} ${selectedProjects[0].appid}`
-      : selectedProjects.map((item) => item.appid).join('、')
-    : '请选择项目'
+
+  const selectedProjectTag = (project) => {
+    if (project.name === '三国杀移动版' && project.appid === '10100001') return '三国杀移动版-APP'
+    if (project.name === '三国杀移动版' && project.appid === '10100011') return '三国杀移动版-PC'
+    return project.name
+  }
 
   useEffect(() => {
     if (!open) return undefined
@@ -655,7 +676,26 @@ function GameModal({ mode, game, configuredIds, onCancel, onSubmit }) {
       setError('请输入展示游戏名称')
       return
     }
-    onSubmit({ mode, projects: selectedProjects, name: name.trim(), original: game })
+    if (appleVerification.enabled) {
+      const missingAppleField = appleVerificationFields.some((field) => !appleVerification[field.key].trim())
+      if (missingAppleField) {
+        setError('请填写完整苹果验单配置')
+        return
+      }
+    }
+    onSubmit({
+      mode,
+      projects: selectedProjects,
+      name: name.trim(),
+      appleVerification: {
+        enabled: appleVerification.enabled,
+        packageName: appleVerification.packageName.trim(),
+        keyId: appleVerification.keyId.trim(),
+        issuerId: appleVerification.issuerId.trim(),
+        privateKey: appleVerification.privateKey.trim(),
+      },
+      original: game,
+    })
   }
 
   const toggleProject = (option) => {
@@ -684,7 +724,7 @@ function GameModal({ mode, game, configuredIds, onCancel, onSubmit }) {
       <div className="modal">
         <button className="modal-x" onClick={onCancel}><X size={16} /></button>
         <h2>{isEdit ? '编辑申诉游戏' : '接入其他游戏'}</h2>
-        {!isEdit && <div className="modal-tip">如未找到所需项目，请联系SDK部门进行添加</div>}
+        <div className="modal-tip">如未找到所需项目，请联系SDK部门进行添加</div>
         <div className="form-row" ref={cascaderRef}>
           <label>
             项目选择 *
@@ -693,8 +733,29 @@ function GameModal({ mode, game, configuredIds, onCancel, onSubmit }) {
               <span>选中的项目，将作为游戏申诉和找回时充值订单的数据来源</span>
             </span>
           </label>
-          <div className={`select-control ${!selectedProjects.length ? 'placeholder' : ''}`} onClick={() => setOpen((next) => !next)}>
-            <span>{mappedLabel}</span><ChevronDown size={14} />
+          <div className={`select-control ${selectedProjects.length ? 'has-tags' : 'placeholder'}`} onClick={() => setOpen((next) => !next)}>
+            {selectedProjects.length ? (
+              <div className="selected-tag-list">
+                {selectedProjects.map((project) => (
+                  <span className="selected-tag" key={project.appid}>
+                    <span>{selectedProjectTag(project)}</span>
+                    <button
+                      type="button"
+                      aria-label={`移除${selectedProjectTag(project)}`}
+                      onClick={(event) => {
+                        event.stopPropagation()
+                        toggleProject(project)
+                      }}
+                    >
+                      <X size={10} />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <span>请选择项目</span>
+            )}
+            <ChevronDown size={14} />
           </div>
           {open && (
             <div className="project-select-menu">
@@ -739,10 +800,50 @@ function GameModal({ mode, game, configuredIds, onCancel, onSubmit }) {
           </label>
           <input placeholder="请输入展示游戏名称" value={name} onChange={(event) => setName(event.target.value)} />
         </div>
+        <div className="form-row">
+          <label>
+            验证苹果订单
+            <span className="field-tip" tabIndex="0">
+              <Info size={12} />
+              <span>开启后，系统使用以下 Apple 参数校验苹果订单</span>
+            </span>
+          </label>
+          <button
+            type="button"
+            aria-pressed={appleVerification.enabled}
+            className={`toggle-switch ${appleVerification.enabled ? 'on' : ''}`}
+            onClick={() => {
+              setAppleVerification((current) => ({ ...current, enabled: !current.enabled }))
+              setError('')
+            }}
+          >
+            <span />
+          </button>
+        </div>
+        {appleVerificationFields.map((field) => (
+          <div className="form-row" key={field.key}>
+            <label>
+              {field.label}
+              <span className="field-tip" tabIndex="0">
+                <Info size={12} />
+                <span>苹果验单所需配置项</span>
+              </span>
+            </label>
+            <input
+              disabled={!appleVerification.enabled}
+              placeholder={field.placeholder}
+              value={appleVerification[field.key]}
+              onChange={(event) => {
+                setAppleVerification((current) => ({ ...current, [field.key]: event.target.value }))
+                setError('')
+              }}
+            />
+          </div>
+        ))}
         {error && <div className="form-error">{error}</div>}
         <div className="modal-foot">
           <button className="secondary-btn" onClick={onCancel}>取消</button>
-          <button className="primary-btn" onClick={handleSubmit}>保存</button>
+          <button className="primary-btn" onClick={handleSubmit}>确认</button>
         </div>
       </div>
     </div>
